@@ -3,8 +3,8 @@ import java.util.ArrayList;
 public class MyToolkit {
     public static ArrayList<Resistor> formBoxWithResistors(int[] mas) {
         ArrayList<Resistor> box = new ArrayList<>();
-        for(int i = 0; i < mas.length; i++) {
-            Resistor resistor = new Resistor(mas[i]);
+        for (int o : mas) {
+            Resistor resistor = new Resistor(o);
             box.add(resistor);
         }
         return box;
@@ -15,5 +15,18 @@ public class MyToolkit {
         for(int i = 0; i < Bot.getMaxGens(); i++) {
             if(gens.get(i) < 7) System.out.println(gens.get(i) + " : Мусорный ген");
         }
+    }
+
+    public static ArrayList<Resistor> formResistorsUsageGens(Bot bot) {
+        int numRes = bot.getGens().get(bot.incI());
+        ArrayList<Resistor> collectedResistors = new ArrayList<>(numRes);
+        for(int j = 0; j < numRes; j++) {
+            if ((bot.getI() + 1) < Bot.getMaxGens() && bot.getResistors().size() > 0) {
+                int index = bot.getGens().get(bot.incI()) % bot.getResistors().size();
+                collectedResistors.add(bot.getResistors().get(index));
+                bot.getResistors().remove(index);
+            }
+        }
+        return collectedResistors;
     }
 }

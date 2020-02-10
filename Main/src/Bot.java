@@ -9,17 +9,25 @@ public class Bot {
     private Schema schema;
     private ArrayList<Resistor> resistors;
     private ArrayList<Integer> gens;
+    private int i = 1;
 
 
     public static int getMaxGens() {
         return MAX_GENS;
     }
-
     public Schema getSchema() {return schema;}
+    public ArrayList<Resistor> getResistors () {return resistors;}
+    public ArrayList<Integer> getGens() {
+        return gens;
+    }
 
-    public void getResistors(ArrayList<Resistor> resistors) {
+    public int getI() {return i;}
+    public int incI() {this.i++; return i;}
+
+    public void setResistors(ArrayList<Resistor> resistors) {
         this.resistors.addAll(resistors);
     }
+
 
     public Bot() {
         resistors = new ArrayList<>();
@@ -42,16 +50,23 @@ public class Bot {
     }
 
     public Schema buildSchema() {
+        //Если нет резисторов то вернуть Null схему и написать об ошибке
         if(resistors.size() == 0) {
             System.out.println("Haven't resistors!!!");
             return null;
         }
+        //Первый ген определяет первый выбранный резистор, все честно, не забываем удалить резистор
         Resistor firstResistor = resistors.get(gens.get(0) % resistors.size());
         resistors.remove(firstResistor);
+        //Инициализируем схему
         schema = new Schema(firstResistor);
-        for(int i = 1; i < MAX_GENS; i++) {
+        //Выполняем генный код
+        for(; i < MAX_GENS; i++) {
+            //Если резсторов не осталось, то можно уже вернуть схему
             if(resistors.size() == 0) return schema;
+            //0-6 : бездействие
             if(gens.get(i) < 7) continue;
+            //7-14 gen(i+1) : последовательно соединить резистор gen(i+1)
             if(gens.get(i) < 15 && (i+1) < MAX_GENS) {
                 int index = gens.get(++i) % resistors.size();
                 Resistor r = resistors.get(index);
@@ -59,6 +74,7 @@ public class Bot {
                 schema.seriesConnect(r);
                 continue;
             }
+            //14-22 gen(i+1) : паралельно соединить резистор i+!
             if(gens.get(i) < 23 && (i+1) < MAX_GENS)  {
                 int index = gens.get(++i) % resistors.size();
                 Resistor r = resistors.get(index);
@@ -66,6 +82,7 @@ public class Bot {
                 schema.parallelConnect(r);
                 continue;
             }
+            //23-30 gen(i+1) gen(i+2) : паралельно соединить последовательную пару
             if(gens.get(i) < 31 && resistors.size() >= 2) {
                 if((i+2) < MAX_GENS) {
                     int index1 = gens.get(++i) % resistors.size();
@@ -83,6 +100,7 @@ public class Bot {
                     continue;
                 }
             }
+            //31-38 gen(i+1) gen(i+2): последовательно соединить паралелльную пару
             if(gens.get(i) < 39 && resistors.size() >= 2) {
                 if((i+2) < MAX_GENS) {
                     int index1 = gens.get(++i) % resistors.size();
@@ -99,44 +117,29 @@ public class Bot {
                     schema.seriesConnect(r1, r2);
                 }
             }
+            //39-46 gen(i+1) ... : Паралельно соединить последовательную цепочку из gen(i+1) резисторов
+
+
+
             if(gens.get(i) < 47 && (i+2) < MAX_GENS) {
-                int numRes = gens.get(++i);
-                ArrayList<Resistor> collectedResistors = new ArrayList<>(numRes);
-                for(int j = 0; j < numRes; j++) {
-                    if ((i + 1) < MAX_GENS&& resistors.size() > 0) {
-                        int index = gens.get(++i) % resistors.size();
-                        collectedResistors.add(resistors.get(index));
-                        resistors.remove(index);
-                    }
-                }
+                ArrayList<Resistor> collectedResistors = MyToolkit.formResistorsUsageGens(this);
                 schema.parallelConnect(collectedResistors);
             }
             if(gens.get(i) < 55 && (i+2) < MAX_GENS) {
-                int numRes = gens.get(++i);
-                ArrayList<Resistor> collectedResistors = new ArrayList<>(numRes);
-                for(int j = 0; j < numRes; j++) {
-                    if ((i + 1) < MAX_GENS && resistors.size() > 0) {
-                        int index = gens.get(++i) % resistors.size();
-                        collectedResistors.add(resistors.get(index));
-                        resistors.remove(index);
-                    }
-                }
+                ArrayList<Resistor> collectedResistors = MyToolkit.formResistorsUsageGens(this);
                 schema.seriesConnect(collectedResistors);
             }
         }
         return schema;
     }
 
-    public ArrayList<Integer> getGens() {
-        return gens;
-    }
+
 
     public ArrayList<Bot> cross(Bot bot) {
-        ArrayList<Integer> gens2 = new ArrayList<>();
-        gens2.addAll(bot.gens);
+        ArrayList<Integer> gens2 = new ArrayList<>(bot.gens);
         int pointCross = random.nextInt(MAX_GENS);
-        ArrayList<Integer> xGens = new ArrayList<>();
-        ArrayList<Integer> yGens = new ArrayList<>();
+        ArrayList<Integer> xGens = new ArrayList<>(MAX_GENS);
+        ArrayList<Integer> yGens = new ArrayList<>(MAX_GENS);
         for(int i = 0; i < pointCross; i++) {
             xGens.add(gens.get(i));
             yGens.add(gens2.get(i));

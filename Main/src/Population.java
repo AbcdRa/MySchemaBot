@@ -20,6 +20,7 @@ public class Population {
     //Создаем популяцию на основе существующих ботов и резисторов
     public Population(ArrayList<Bot> bots, ArrayList<Resistor> resistors) {
         this.resistors.addAll(resistors);
+        this.bots = new ArrayList<>(maxNumBots);
         this.bots.addAll(bots);
         //Стандартная цель
         goal = 1000.;
@@ -44,11 +45,11 @@ public class Population {
 
     //Находит лучшего бота в популяции
     public Bot findBestBot() {
-        bots.get(0).getResistors(resistors);
+        bots.get(0).setResistors(resistors);
         double minScore = norma(bots.get(0).buildSchema().getResistance(), goal);
         Bot bestBot = bots.get(0);
         for(Bot bot : bots){
-            bot.getResistors(resistors);
+            bot.setResistors(resistors);
             double resistance = bot.buildSchema().getResistance();
             double score = norma(resistance, goal);
             if(score <= minScore){

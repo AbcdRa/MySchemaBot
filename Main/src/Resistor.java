@@ -10,8 +10,8 @@ public class Resistor {
         return id;
     }
 
-    public Resistor(int resistance) {
-        this.resistance = resistance;
+    public Resistor(int getResistance) {
+        this.resistance = getResistance;
         id = static_id++;
     }
 

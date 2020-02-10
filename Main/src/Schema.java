@@ -11,74 +11,74 @@ public class Schema {
     }
 
     public Schema(Resistor resistor) {
-        resistance = resistor.resistance;
+        resistance = resistor.getResistance();
         descriptor = "R"+resistor.getId();
         countResistor = 1;
         usedResistor = new ArrayList<>();
-        usedResistor.add("Resistor" + resistor.getId() + " - " + resistor.resistance);
+        usedResistor.add("Resistor" + resistor.getId() + " - " + resistor.getResistance());
     }
 
     public void seriesConnect(Resistor r1, Resistor r2) {
-        double tempResistance = r1.resistance * r2.resistance / (r1.resistance + r2.resistance);
+        double tempResistance = r1.getResistance() * r2.getResistance() / (r1.getResistance() + r2.getResistance());
         resistance += tempResistance;
         descriptor += "+R" + r1.getId() + "/R" + r2.getId();
         countResistor += 2;
-        usedResistor.add("Resistor" + r1.getId() + " - " + r1.resistance);
-        usedResistor.add("Resistor" + r2.getId() + " - " + r2.resistance);
+        usedResistor.add("Resistor" + r1.getId() + " - " + r1.getResistance());
+        usedResistor.add("Resistor" + r2.getId() + " - " + r2.getResistance());
     }
 
     public void seriesConnect(Resistor r) {
-        resistance += r.resistance;
+        resistance += r.getResistance();
         descriptor += "+R" + r.getId();
         countResistor++;
-        usedResistor.add("Resistor" + r.getId() + " - " + r.resistance);
+        usedResistor.add("Resistor" + r.getId() + " - " + r.getResistance());
     }
 
     public void seriesConnect(ArrayList<Resistor> res) {
         double tempResistance = 0;
-        String tempDescription = "(";
+        StringBuilder tempDescription = new StringBuilder("(");
         for(Resistor r : res) {
-            tempResistance += 1/r.resistance;
-            usedResistor.add("Resistor" + r.getId() + " - " + r.resistance);
+            tempResistance += 1/r.getResistance();
+            usedResistor.add("Resistor" + r.getId() + " - " + r.getResistance());
             countResistor ++;
-            tempDescription += "R" + r.getId() + "/";
+            tempDescription.append("R").append(r.getId()).append("/");
         }
-        tempDescription = tempDescription.substring(0, tempDescription.length()-1);
-        tempDescription += ")";
+        tempDescription = new StringBuilder(tempDescription.substring(0, tempDescription.length() - 1));
+        tempDescription.append(")");
         resistance = resistance + tempResistance;
-        descriptor =  descriptor + "+" + tempDescription;
+        descriptor =  descriptor + "+" + tempDescription.toString();
     }
 
     public void parallelConnect(Resistor r1, Resistor r2) {
-        double tempResistance = r1.resistance + r2.resistance;
+        double tempResistance = r1.getResistance() + r2.getResistance();
         resistance = resistance * tempResistance / (resistance + tempResistance);
         descriptor = "(" + descriptor + ")/(R" + r1.getId() + "+R" +r2.getId() + ")";
         countResistor += 2;
-        usedResistor.add("Resistor" + r1.getId() + " - " + r1.resistance);
-        usedResistor.add("Resistor" + r2.getId() + " - " + r2.resistance);
+        usedResistor.add("Resistor" + r1.getId() + " - " + r1.getResistance());
+        usedResistor.add("Resistor" + r2.getId() + " - " + r2.getResistance());
     }
 
     public void parallelConnect(ArrayList<Resistor> res) {
         double tempResistance = 0;
-        String tempDescription = "(";
+        StringBuilder tempDescription = new StringBuilder("(");
         for(Resistor r : res) {
-            tempResistance += r.resistance;
-            usedResistor.add("Resistor" + r.getId() + " - " + r.resistance);
+            tempResistance += r.getResistance();
+            usedResistor.add("Resistor" + r.getId() + " - " + r.getResistance());
             countResistor ++;
-            tempDescription += "R" + r.getId() + "+";
+            tempDescription.append("R").append(r.getId()).append("+");
         }
-        tempDescription = tempDescription.substring(0, tempDescription.length()-1);
-        tempDescription += ")";
+        tempDescription = new StringBuilder(tempDescription.substring(0, tempDescription.length() - 1));
+        tempDescription.append(")");
         resistance = resistance * tempResistance / (resistance + tempResistance);
-        descriptor = "(" + descriptor + ")/" + tempDescription;
+        descriptor = "(" + descriptor + ")/" + tempDescription.toString();
     }
 
 
     public void parallelConnect(Resistor r) {
-        resistance = resistance * r.resistance / (resistance + r.resistance);
+        resistance = resistance * r.getResistance() / (resistance + r.getResistance());
         descriptor = "(" + descriptor + ")/R" + r.getId() ;
         countResistor++;
-        usedResistor.add("Resistor" + r.getId() + " - " + r.resistance);
+        usedResistor.add("Resistor" + r.getId() + " - " + r.getResistance());
     }
 
     public void show() {

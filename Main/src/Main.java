@@ -1,26 +1,12 @@
-import java.awt.*;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 
 
 public class Main {
     public static void main(String[] args) {
         int[] mas = {10,20,30,40,50,60,70,80,90,100,200,500};
         ArrayList<Resistor> resistors = MyToolkit.formBoxWithResistors(mas);
-//        ArrayList<Resistor> resistors = getStartPackResistors();
-//        Integer[] idealGens = {0, 14, 0, 14, 0, 14, 0, 47, 2, 0, 0};
-/*        ArrayList<Integer> listGens = new ArrayList<>(Bot.getMaxGens());
-        Collections.addAll(listGens, idealGens);
-        for (int i = idealGens.length; i < Bot.getMaxGens(); i++) {
-            listGens.add(0);
-        }
-        Bot bot = new Bot(listGens);
-        bot.getResistors(resistors);
-        bot.buildSchema();
-        bot.getSchema().show();*/
         Population population = new Population(resistors);
-        population.setGoal(1240);
+        population.setGoal(77);
         long timeStart = System.currentTimeMillis();
         for(int i = 0; i < 10000; i++) {
             oneCycle(population);
